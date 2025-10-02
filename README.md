@@ -1,4 +1,6 @@
-# Toy GPT (char-level) — Tiny Shakespeare
+<img src="assets/logo.png" alt="Sample generation from Toy GPT" width="200" align="right">
+
+# Toy GPT (char-level) — Tiny Shakespeare 
 
 This repo is a clean project skeleton that packages your provided PyTorch code
 into a small, reproducible project structure. It trains a tiny Transformer
@@ -27,10 +29,12 @@ toy-gpt-char/
 ├── src/
 │   └── toygpt/
 │       ├── __init__.py
-│       ├── model.py
 │       ├── data.py
-│       ├── train.py
-│       └── generate.py
+│       ├── ensure_data.py
+│       ├── generate.py
+│       ├── metrics.py
+│       ├── model.py  
+│       └── train.py
 ├── scripts/
 │   └── download_data.py
 ├── data/
