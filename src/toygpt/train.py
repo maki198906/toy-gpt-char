@@ -1,3 +1,4 @@
+import argparse
 import os
 
 import torch
@@ -28,6 +29,14 @@ CKPT_PATH = os.path.join(CKPT_DIR, "ckpt.pt")
 
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--sample",
+        action="store_true",
+        help="Generate a text sample after training completes.",
+    )
+    args = parser.parse_args()
+
     torch.manual_seed(1337)
 
     text = load_text(DATA_PATH)
@@ -74,11 +83,10 @@ def main():
     )
     print(f"Saved checkpoint to {CKPT_PATH}")
 
-    # generate a sample
-    context = torch.zeros((1, 1), dtype=torch.long, device=device)
-    sample = model.generate(context, max_new_tokens=500)[0].tolist()
-    print("".join([chars[i] for i in sample]))
-
+    if args.sample:
+        context = torch.zeros((1, 1), dtype=torch.long, device=device)
+        sample = model.generate(context, max_new_tokens=500)[0].tolist()
+        print("".join([chars[i] for i in sample]))
 
 if __name__ == "__main__":
     main()

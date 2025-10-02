@@ -27,6 +27,7 @@ checkpoints/*
 data/*
 !data/.gitkeep
 assets/*
+!assets/.gitkeep
 
 # OS
 .DS_Store

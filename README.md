@@ -79,6 +79,12 @@ python -m toygpt.train
 
 By default it runs for 5000 iterations and prints losses every 300 steps. A checkpoint is saved to `checkpoints/ckpt.pt` at the end of training.
 
+> Want a quick sanity sample after training? Append `--sample` to generate text immediately:
+>
+> ```bash
+> python -m toygpt.train --sample
+> ```
+
 > **Expected (reported) final losses:** `train loss 1.6604, val loss 1.8520`  
 > Exact numbers can vary slightly by hardware/seed.
 

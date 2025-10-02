@@ -1,13 +1,17 @@
-import os
 import argparse
+import os
+
 import torch
 
-from .model import MyCustomToyGPT, device, block_size, n_embd, n_layer, n_head, dropout
-from .data import load_text, build_vocab
+from .data import build_vocab, load_text
+from .model import MyCustomToyGPT, device
 
-DATA_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "..", "data", "input.txt")
+DATA_PATH = os.path.join(
+    os.path.dirname(os.path.dirname(__file__)), "..", "data", "input.txt"
+)
 CKPT_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "..", "checkpoints")
 CKPT_PATH = os.path.join(CKPT_DIR, "ckpt.pt")
+
 
 def main():
     parser = argparse.ArgumentParser()
@@ -30,6 +34,7 @@ def main():
     context = torch.zeros((1, 1), dtype=torch.long, device=device)
     out_idx = model.generate(context, max_new_tokens=args.max_new_tokens)[0].tolist()
     print(decode(out_idx))
+
 
 if __name__ == "__main__":
     main()
