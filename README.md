@@ -57,6 +57,7 @@ pip install --upgrade pip
 
 ```bash
 pip install -r requirements.txt
+pip install -e .
 ```
 
 > If you're on a CUDA machine, install the appropriate `torch` build for your GPU.

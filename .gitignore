@@ -15,6 +15,7 @@ venv/
 coverage/
 dist/
 build/
+.python-version
 
 # VSCode / IDE
 .vscode/
@@ -25,6 +26,7 @@ checkpoints/*
 !checkpoints/.gitkeep
 data/*
 !data/.gitkeep
+assets/*
 
 # OS
 .DS_Store
