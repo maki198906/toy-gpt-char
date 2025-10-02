@@ -35,6 +35,8 @@ toy-gpt-char/
 │       ├── metrics.py
 │       ├── model.py  
 │       └── train.py
+├── tests/
+│   └── test_model_forward.py
 ├── scripts/
 │   └── download_data.py
 ├── data/
