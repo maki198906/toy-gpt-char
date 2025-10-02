@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info/
+.venv/
+venv/
+.env
+.env.*
+.ipynb_checkpoints/
+.cache/
+.mypy_cache/
+.pytype/
+.pytest_cache/
+coverage/
+dist/
+build/
+
+# VSCode / IDE
+.vscode/
+.idea/
+
+# Data and checkpoints
+checkpoints/*
+!checkpoints/.gitkeep
+data/*
+!data/.gitkeep
+
+# OS
+.DS_Store
+Thumbs.db
