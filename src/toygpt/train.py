@@ -35,6 +35,17 @@ def main():
         action="store_true",
         help="Generate a text sample after training completes.",
     )
+    parser.add_argument(
+        "--resume",
+        action="store_true",
+        help="Resume training from the last saved checkpoint if available.",
+    )
+    parser.add_argument(
+        "--steps",
+        type=int,
+        default=max_iters,
+        help=f"Number of optimization steps to run (default: {max_iters}).",
+    )
     args = parser.parse_args()
 
     torch.manual_seed(1337)
@@ -52,7 +63,25 @@ def main():
     model = MyCustomToyGPT(vocab_size).to(device)
     optimizer = optim.AdamW(model.parameters(), lr=learning_rate)
 
-    for iter in range(max_iters):
+    start_step = 0
+    if args.resume and os.path.exists(CKPT_PATH):
+        ckpt = torch.load(CKPT_PATH, map_location=device)
+        model.load_state_dict(ckpt["model_state"])
+        optimizer.load_state_dict(ckpt["optimizer_state"])
+        start_step = ckpt.get("step", 0)
+        print(f"Resumed from checkpoint at step {start_step}")
+    elif args.resume:
+        print("No checkpoint found. Starting from scratch.")
+
+    if start_step > 0:
+        losses = estimate_loss(model, batcher, eval_iters, device)
+        print(
+            f"step {start_step}: train loss {losses['train']:.4f}, val loss {losses['val']:.4f}"
+        )
+
+    total_steps = start_step + args.steps
+
+    for iter in range(start_step, total_steps):
         if iter % eval_interval == 0:
             losses = estimate_loss(model, batcher, eval_iters, device)
             print(
@@ -70,6 +99,7 @@ def main():
         {
             "model_state": model.state_dict(),
             "optimizer_state": optimizer.state_dict(),
+            "step": total_steps,
             "meta": {
                 "vocab": chars,
                 "block_size": block_size,
@@ -87,6 +117,7 @@ def main():
         context = torch.zeros((1, 1), dtype=torch.long, device=device)
         sample = model.generate(context, max_new_tokens=500)[0].tolist()
         print("".join([chars[i] for i in sample]))
+
 
 if __name__ == "__main__":
     main()

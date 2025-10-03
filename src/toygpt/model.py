@@ -4,7 +4,7 @@ from torch.nn import functional as F
 
 # hyperparameters
 batch_size = 32
-block_size = 8
+block_size = 16
 max_iters = 5000
 eval_interval = 300
 learning_rate = 1e-3
@@ -16,41 +16,41 @@ dropout = 0.2
 n_head = 6
 
 
-class Head(nn.Module):
-    """one head of self-attention"""
-
-    def __init__(self, head_size):
-        super().__init__()
-        self.key = nn.Linear(n_embd, head_size, bias=False)
-        self.query = nn.Linear(n_embd, head_size, bias=False)
-        self.value = nn.Linear(n_embd, head_size, bias=False)
-        self.register_buffer("tril", torch.tril(torch.ones(block_size, block_size)))
-        self.dropout = nn.Dropout(dropout)
-
-    def forward(self, x):
-        B, T, C = x.shape
-        k = self.key(x)  # (B, T, C)
-        q = self.query(x)  # (B, T, C)
-        wei = q @ k.transpose(-2, -1) * C**-0.5  # (B, T, T)
-        wei = wei.masked_fill(self.tril[:T, :T] == 0, float("-inf"))
-        wei = F.softmax(wei, dim=-1)
-        wei = self.dropout(wei)
-        v = self.value(x)  # (B, T, C)
-        out = wei @ v  # (B, T, C)
-        return out
-
-
 class MultiHeadAttention(nn.Module):
-    """performing multiple heads in parallel"""
+    """Self-attention that processes all heads in a single matmul."""
 
     def __init__(self, num_heads, head_size):
         super().__init__()
-        self.heads = nn.ModuleList([Head(head_size) for _ in range(num_heads)])
-        self.proj = nn.Linear(n_embd, n_embd)
+        self.num_heads = num_heads
+        self.head_size = head_size
+        self.key = nn.Linear(n_embd, num_heads * head_size, bias=False)
+        self.query = nn.Linear(n_embd, num_heads * head_size, bias=False)
+        self.value = nn.Linear(n_embd, num_heads * head_size, bias=False)
+        self.register_buffer("tril", torch.tril(torch.ones(block_size, block_size)))
+        self.proj = nn.Linear(num_heads * head_size, n_embd)
         self.dropout = nn.Dropout(dropout)
 
     def forward(self, x):
-        out = torch.cat([h(x) for h in self.heads], dim=-1)
+        B, T, _ = x.shape
+
+        k = self.key(x).view(B, T, self.num_heads, self.head_size).transpose(1, 2)
+        q = self.query(x).view(B, T, self.num_heads, self.head_size).transpose(1, 2)
+        # q, k: (B, n_heads, T, head_size)
+        wei = q @ k.transpose(-2, -1) * self.head_size**-0.5
+        # wei: (B, n_heads, T, T)
+        wei = wei.masked_fill(self.tril[:T, :T] == 0, float("-inf"))
+        wei = F.softmax(wei, dim=-1)
+        wei = self.dropout(wei)
+
+        v = self.value(x).view(B, T, self.num_heads, self.head_size).transpose(1, 2)
+        # v: (B, n_heads, T, head_size)
+        out = wei @ v
+        # out: (B, n_heads, T, head_size)
+        out = (
+            out.transpose(1, 2).contiguous().view(B, T, self.num_heads * self.head_size)
+        )
+        # out: (B, T, n_heads * head_size)
+
         out = self.proj(out)
         out = self.dropout(out)
         return out

@@ -79,7 +79,7 @@ This will place `data/input.txt` (Tiny Shakespeare) into the `data/` folder.
 python -m toygpt.train
 ```
 
-By default it runs for 5000 iterations and prints losses every 300 steps. A checkpoint is saved to `checkpoints/ckpt.pt` at the end of training.
+By default it runs for 5100 iterations and prints losses every 300 steps. A checkpoint is saved to `checkpoints/ckpt.pt` at the end of training.
 
 > Want a quick sanity sample after training? Append `--sample` to generate text immediately:
 >
@@ -87,7 +87,13 @@ By default it runs for 5000 iterations and prints losses every 300 steps. A chec
 > python -m toygpt.train --sample
 > ```
 
-> **Expected (reported) final losses:** `train loss 1.6604, val loss 1.8520`  
+> Need to keep training? Use `--resume` to pick up from the latest checkpoint and optionally pass `--steps` to control how many additional optimization steps to run (defaults to 5000 per invocation):
+>
+> ```bash
+> python -m toygpt.train --resume --steps 2000
+> ```
+
+> **Expected (reported) final losses:** `train loss 1.6527, val loss 1.8550`  
 > Exact numbers can vary slightly by hardware/seed.
 
 ### 5) Generate text
@@ -112,8 +118,8 @@ git push -u origin main
 ## Hyperparameters (defaults)
 
 - `batch_size = 32`
-- `block_size = 8`
-- `max_iters = 5000`
+- `block_size = 16`
+- `max_iters = 5100`
 - `eval_interval = 300`
 - `learning_rate = 1e-3`
 - `eval_iters = 200`
