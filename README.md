@@ -137,3 +137,4 @@ All of the above are encoded directly in `toygpt/train.py` and `toygpt/model.py`
 - The model is intentionally small. It's great for learning and quick experiments.
 - Results depend on randomness, device type (CPU/GPU), PyTorch version, and CUDA/cuDNN kernels.
 - For longer sequences or better quality, raise `block_size`, `n_layer`, and `n_embd`, and train longer.
+- The `feature/heads-parallel` branch keeps the alternative attention implementation handy; checkout that branch if you want to experiment with the multi-head refactor before it lands in `main`.
